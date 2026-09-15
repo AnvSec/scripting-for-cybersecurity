@@ -1,0 +1,6 @@
+Cybersecurity CLI Report
+User: codespace
+Host: codespaces-eb4be6
+Directory: /workspaces/scripting-for-cybersecurity/lab02/challenge
+Python: /home/codespace/.python/current/bin/python3
+Pythong filenames found:  6
