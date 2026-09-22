@@ -1,0 +1,10 @@
+Web Access Analysis
+
+Total Requests:
+403 Responses:
+404 Responses:
+Requests to /admin:
+Requests to /.Event
+ssqlmap Requests:
+
+Top Source IPs:
