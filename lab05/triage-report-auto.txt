@@ -1,0 +1,32 @@
+TRIAGE REPORT
+=============
+Analyst: Dorian Pavosevic
+Case Reference: CASE-2026-014
+Date: Mon Sep 28 11:28:31 UTC 2026
+
+Total Files: 24
+Total Directories: 9
+Python Files: 2
+Shell Scripts: 1
+Log Files: 4
+Configuration Files: 3
+Empty Files: 1
+Archives: 1
+
+Files containing admin:
+case/logs/auth.log
+case/logs/access.log
+case/backups/users.old
+case/evidence/notes.txt
+case/triage-report.txt
+
+Evidence file types:
+case/evidence/archive.zip:    Zip archive data, at least v2.0 to extract, compression method=deflate
+case/evidence/empty.bin:      empty
+case/evidence/image.png:      PNG image data, 1 x 1, 8-bit/color RGBA, non-interlaced
+case/evidence/notes.txt:      ASCII text
+case/evidence/passwords.txt:  ASCII text
+case/evidence/readme.md:      ASCII text
+case/evidence/suspicious.dat: ELF, unknown class 154
+
+Scripts (Python + shell): 3
