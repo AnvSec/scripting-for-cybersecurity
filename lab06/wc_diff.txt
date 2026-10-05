@@ -1,0 +1,4 @@
+The difference between wc -l case/logs/auth.log` and `wc -l < case/logs/auth.log` is
+that the < in that line redirects the file into the commands standard input which in turn just counts the output.
+
+While without it prints out the output count and also the file path because the argument is passed into the wc command.
