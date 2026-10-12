@@ -1,0 +1,92 @@
+Lab 6 investigation - supplied evidence only
+
+Evidence and limits
+The attached auth.log has 60 lines, from Sep 20 08:00:20 to Sep 20
+08:46:20. This matches the collected-log window described in lab06.md,
+so it is placed at case/logs/auth.log. The full Lab 3 server auth.log
+was not supplied. No later events, counts, rankings or usernames have
+been invented. The five supplied evidence files were copied byte for
+byte into case/logs/ and intel/.
+
+Exercise 4.5 - log comparison
+File                       Lines  Failed logins  First timestamp    Last timestamp
+case/logs/auth.log          60     45             Sep 20 08:00:20    Sep 20 08:46:20
+../lab03-data/auth.log      NOT SUPPLIED - cannot measure this row
+
+The lab instructions say the full log runs until after 10:00. That is
+an instruction-provided description, not a result verified from a file.
+
+Part 8.1 - who attacked most?
+Collected-log failed-password sources, highest count first:
+15  203.0.113.10
+14  198.51.100.24
+ 8  198.51.100.77
+ 5  203.0.113.200
+ 3  203.0.113.15
+
+The top source in this collected window is 203.0.113.10. There are 45
+failed-password events and 15 accepted-password events. The top three
+are 203.0.113.10, 198.51.100.24 and 198.51.100.77.
+The server ranking is unknown without the full server log. We cannot
+claim the ranking is unchanged, or that the collected copy identifies
+the highest-volume source over the full attack. Source IPs identify
+logged connection sources, not necessarily individual people.
+
+Part 8.2 - targeted usernames
+Complete list in the SUPPLIED COLLECTED log (not the missing server log):
+17 admin
+10 root
+ 7 guest
+ 4 backup
+ 4 test
+ 3 oracle
+
+There is no "invalid user" line in the supplied collected log.
+The complete server list and the exact responsible line remain blocked
+by the missing ../lab03-data/auth.log.
+
+The parsing issue can still be explained: in a line containing
+"Failed password for invalid user NAME from IP", a pipeline that takes
+the word immediately after "for" returns "invalid", not NAME. The
+finished script skips the two words "invalid user". A temporary,
+clearly synthetic test used username deploy to verify this; that test
+is not evidence of a real login and is not included in case/ or intel/.
+
+Once the real server log is available, find the relevant lines with:
+grep invalid ../lab03-data/auth.log
+
+Get the complete username counts with:
+awk '/Failed password/ {for(i=1;i<=NF-3;i++) if($i=="Failed" && $(i+1)=="password" && $(i+2)=="for") {if($(i+3)=="invalid" && $(i+4)=="user") print $(i+5); else print $(i+3); break}}' ../lab03-data/auth.log | sort | uniq -c | sort -nr
+
+Part 8.3 - report on access.log
+report-web.txt reports 0 failed-password events, no most common SSH
+source and no targeted SSH usernames. This is correct for the searched
+SSH message, but it is not a general web-attack analysis. The web log
+has 80 requests; 22 contain sqlmap (27% with shell integer arithmetic,
+or 27.5% without truncation). To analyse HTTP activity, count the first
+field as the client IP and examine URLs, status codes and user agents.
+The script explicitly says that zero SSH events does not rule out other
+activity.
+
+Part 8.4 - firewall blocks and SSH events
+The supplied firewall log contains:
+BLOCK 203.0.113.10 -> 10.0.0.10:22
+BLOCK 198.51.100.24 -> 10.0.0.10:22
+BLOCK 203.0.113.200 -> 10.0.0.30:3389
+
+Two possible explanations for SSH sources appearing in both logs:
+1. The SSH attempts happened before the firewall began blocking them.
+2. The SSH events concern a different destination or network path from
+   the specific destination/path where these firewall blocks occurred.
+These are possibilities, not confirmed causes. The firewall entries
+have no timestamps, and the SSH lines do not include the destination IP,
+so the supplied files cannot establish exact timing or path correlation.
+
+Remaining evidence needed
+- Full ../lab03-data/auth.log (and access.log for the full-log exercise).
+- case/backups/config.old and case/configs/app.conf.
+- case/config-old.txt and case/config-new.txt.
+- Original remaining case/ tree, including case/evidence/empty.bin,
+  to reproduce the original wildcard count and empty-file example.
+
+No Git repository or remote was supplied. Nothing was committed or pushed.

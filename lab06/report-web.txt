@@ -1,0 +1,8 @@
+Log file: case/logs/access.log
+Failed password events: 0
+Most common failed-login source: None
+Top 3 failed-login sources:
+None (no failed-login sources found).
+Top 3 targeted usernames:
+None (no failed-login usernames found).
+No SSH failed-password events found; this does not rule out other activity.

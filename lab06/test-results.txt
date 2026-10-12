@@ -1,0 +1,94 @@
+PASS syntax args_demo.sh
+PASS syntax attacker_report.sh
+PASS syntax buggy.sh
+PASS syntax check_file.sh
+PASS syntax config_drift.sh
+PASS syntax exercise1.sh
+PASS syntax failedlogin.sh
+PASS syntax logstats.sh
+PASS syntax nested_sub.sh
+PASS syntax one_arg.sh
+PASS syntax search.sh
+PASS syntax sql.sh
+PASS syntax today.sh
+PASS syntax top3.sh
+PASS syntax validate_file.sh
+PASS independent supplied SSH totals
+PASS SSH report success
+PASS SSH report counts and ranking
+PASS SSH report username counts
+PASS web report zero events and no invented attacker
+PASS statistics auth.log
+PASS statistics access.log
+PASS statistics firewall.log
+PASS statistics intel/users.csv
+PASS statistics intel/iocs.txt
+PASS keyword Failed
+PASS keyword Accepted
+PASS keyword root
+PASS keyword 198.51.100.77
+PASS sqlmap keyword and grep status
+PASS no matches is not a script error
+PASS invalid regex returns nonzero and stderr
+PASS logstats.sh missing argument
+PASS logstats.sh too many arguments
+PASS logstats.sh missing file
+PASS logstats.sh directory
+PASS attacker_report.sh missing argument
+PASS attacker_report.sh too many arguments
+PASS attacker_report.sh missing file
+PASS attacker_report.sh directory
+PASS validate_file.sh missing argument
+PASS validate_file.sh too many arguments
+PASS validate_file.sh missing file
+PASS validate_file.sh directory
+PASS top3 missing file
+PASS top3 extra arguments
+PASS top3 default equals explicit path
+PASS check_file success
+PASS check_file from case has wrong relative path
+PASS validate_file real data
+PASS buggy fixed missing file
+PASS buggy valid file
+PASS fixed buggy chain
+PASS args_demo 0
+PASS args_demo 3
+PASS log wildcard expands to 3
+PASS partial case wildcard expands to 1
+PASS one_arg quoted
+PASS one_arg unquoted
+PASS search quoted versus unquoted
+PASS IP search auth.log
+PASS IP search access.log
+PASS IP search firewall.log
+PASS run today.sh
+PASS run nested_sub.sh
+PASS run failedlogin.sh
+PASS run sql.sh
+PASS run exercise1.sh
+PASS grep eve
+PASS grep mallory
+PASS diff identical
+PASS diff changed
+PASS diff missing file
+PASS diff wrong argument count
+PASS diff chain NO DRIFT
+PASS diff chain DRIFT DETECTED
+PASS validate empty file
+PASS empty log sensible zeros
+PASS empty attacker report
+PASS space path, alternate cwd and invalid-user parsing
+PASS logstats filename with spaces
+SKIP validate_file.sh unreadable file: runtime is root; switching user is unavailable here.
+SKIP logstats.sh unreadable file: runtime is root; switching user is unavailable here.
+SKIP attacker_report.sh unreadable file: runtime is root; switching user is unavailable here.
+SKIP top3.sh unreadable file: runtime is root; switching user is unavailable here.
+PASS broken quote demo collapses three rows
+PASS broken exit demo lies about failure
+PASS -z demo skips nonempty keyword
+PASS -z demo empty pattern matches every line
+PASS wc newline semantics without final newline
+PASS evidence bytes unchanged
+
+87 checks passed; 4 skipped.
+Real server-log and configuration comparisons: NOT TESTED; source files were not supplied.

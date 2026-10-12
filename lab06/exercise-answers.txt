@@ -1,0 +1,112 @@
+Lab 6 exercise answers
+Results below were checked against the attachments. Missing inputs are
+identified explicitly. Run the scripts from lab06 unless stated otherwise.
+
+Exercise 1
+1. exercise1.sh sets WEB_LINES and prints 80 lines for access.log.
+2. It sets BLOCK_COUNT and prints 3 BLOCK decisions.
+3. failedlogin.sh and exercise1.sh put just the IP into TOP_IP and print
+   203.0.113.10. The original failedlogin.sh included both count and IP.
+4. wc -l case/logs/auth.log prints the count and filename. With <, the
+   shell feeds the file into standard input, so wc prints only the count.
+   wc -l counts newline characters; it does not count words.
+5. Quoted output preserves these three separate lines and their padding:
+        15 203.0.113.10
+        14 198.51.100.24
+         8 198.51.100.77
+   Removing the quotes collapses them into:
+   15 203.0.113.10 14 198.51.100.24 8 198.51.100.77
+   Verified using a temporary broken copy, then keeping the fixed version.
+6. sql.sh uses one echo and prints:
+   sqlmap requests: 22, which is 27% of all requests.
+   Bash integer division truncates 27.5 to 27.
+
+Exercise 2
+1. With a b c, $3 contains c and $# is 3. The original args_demo.sh does
+   not echo $3 separately, but c appears in its all-arguments output.
+2. With no arguments, $1 is empty and $# is 0.
+3. Check $# to avoid using a missing filename or other required input.
+4. In this reconstructed partial case/ tree, case/* expands only to
+   case/logs, so $# is 1. It matches immediate entries, not every file
+   recursively. The original full case/ directory was not supplied;
+   its original count cannot be inferred from the screenshot.
+   case/logs/*.log expands to 3 arguments here.
+5. With "Accepted password", search.sh searches the full phrase. Without
+   quotes, $2 is only Accepted and the extra word password becomes $3,
+   which this teaching example ignores. Both runs return the same 15
+   events in this supplied log, but the search patterns differ.
+6. All three files were searched for 203.0.113.200. It appears in auth.log
+   on 5 lines and firewall.log on 1 line. It is absent from access.log.
+   The search exit codes are respectively 0, 0 and 1 for these outcomes.
+
+Exercise 3
+1. Running ../check_file.sh from case/ returns 1 because its relative
+   path is then case/case/logs/auth.log, which does not exist.
+2. Exit codes let other scripts distinguish problems and decide what to
+   do next without having to interpret an English error message.
+3. validate_file.sh: no argument -> 1; missing log -> 2; real auth.log
+   -> 0. A temporary empty file -> 4. The original case/evidence/empty.bin
+   was not attached, so that exact path currently returns 2, not 4.
+   Permission-denied handling returns 3 by design; that branch could not
+   be runtime-verified here because the runner is root and switching to
+   an unprivileged user was unavailable. Rerun tests as your lab user.
+4. 2> errors.txt redirects standard error into errors.txt. Standard output
+   remains separate. The script returns 2 for the missing file.
+5. BLOCKED: case/backups/config.old and case/configs/app.conf were not
+   supplied. No changed settings or most important change can be named.
+   config_drift.sh is implemented. Its exit codes 0, 1 and 2 were tested
+   using identical, different and missing temporary files.
+6. ./config_drift.sh "$BASELINE" "$CURRENT" > /dev/null && echo "NO DRIFT" || echo "DRIFT DETECTED"
+   Tested: identical files print NO DRIFT; differing files print DRIFT
+   DETECTED. This exercise's short chain also prints DRIFT DETECTED on a
+   comparison error; use the saved status to distinguish 1 from 2 when
+   building a real monitoring tool.
+
+Exercise 4
+1. Both intel files work: users.csv has 9 lines (including its header),
+   iocs.txt has 7. Generic text statistics are meaningful; "Failed logins"
+   is just a phrase count and is 0 for both, not an analysis of their role.
+2. The first if requires exactly one argument; the next checks that it
+   names a regular file. Argument validation comes first so there is a
+   filename to check. The finished script additionally checks readability.
+3. Quotes prevent spaces in a filename from splitting it into arguments
+   and prevent wildcard characters in its value from being expanded.
+4. firewall.log reports 0 failed logins. This is correct for the literal
+   phrase "Failed password". There are still 3 firewall BLOCK decisions;
+   these are different event types.
+5. See the comparison table in investigation.txt. The server row cannot
+   be completed from the supplied files.
+
+Exercise 5
+1. Searching access.log for sqlmap returns 22 matching lines; grep exits 0.
+2. With -z instead of -n, a nonempty keyword is skipped. An empty keyword
+   runs grep with an empty pattern, matching every line (80 in access.log).
+   Both outcomes were tested in a temporary modified copy.
+3. A missing keyword prints a count of 0 from grep -c, but grep exits 1.
+   grep uses its exit status to indicate whether it found a match, not
+   whether it successfully printed a number. STATUS=$? saves that result
+   immediately. The script prints it on the next line.
+4. Implemented: a zero count prints "No matches found.". A genuine grep
+   error, such as the invalid regex [, returns script exit code 4 and
+   writes an error to stderr. A normal no-match search still completes
+   the overall statistics script successfully.
+
+Exercise 6
+1. Two deliberately broken copies were executed in a temporary directory:
+   - Removing the quotes around TOP_ATTACKERS collapsed three rows into
+     one line. Restoring quotes fixed the output.
+   - Removing the missing-file exit and stderr redirection from buggy.sh
+     printed an error to stdout but returned 0. Restoring both fixed it.
+   The reproductions are also in tests/test_lab06.py.
+2. ./buggy.sh missing.txt && echo "ok" || echo "failed"
+   The fixed version prints failed on stdout and its error on stderr.
+3. logstats.sh now checks readability and command errors, and distinguishes
+   grep status 1 (no match) from status 2 (error). Invalid search patterns
+   no longer print an error followed by a misleading exit 0. Empty logs
+   produce a longest-line value of 0. wc -c is correctly labelled as bytes
+   (the supplied ASCII logs have the same byte and character counts).
+
+Part 8
+See investigation.txt, report-collected.txt and report-web.txt.
+report-server.txt is explicitly a missing-input notice, not a fabricated
+server report. Re-run its documented command when the real log is available.

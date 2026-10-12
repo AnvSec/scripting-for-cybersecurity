@@ -1,0 +1,11 @@
+Log file: case/logs/auth.log
+Failed password events: 45
+Most common failed-login source: 203.0.113.10
+Top 3 failed-login sources:
+     15 203.0.113.10
+     14 198.51.100.24
+      8 198.51.100.77
+Top 3 targeted usernames:
+     17 admin
+     10 root
+      7 guest

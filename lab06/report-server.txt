@@ -1,0 +1,8 @@
+NOT GENERATED - required source was not attached.
+
+Missing: ../lab03-data/auth.log (the full server SSH log).
+The supplied auth.log ends at 08:46:20 and is used as the collected log.
+It must not be copied into the server-log location to fabricate a comparison.
+
+Once the real file is available, run from lab06:
+./attacker_report.sh ../lab03-data/auth.log > report-server.txt
