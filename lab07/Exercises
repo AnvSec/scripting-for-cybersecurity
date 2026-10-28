@@ -1,0 +1,380 @@
+===== EXERCISE 1 =====
+
+Q1
+@AnvSec ➜ /workspaces/scripting-for-cybersecurity/lab07 (main) $ ./classify_size.sh case/logs/a
+access.log  auth.log    
+@AnvSec ➜ /workspaces/scripting-for-cybersecurity/lab07 (main) $ ./classify_size.sh case/logs/auth.log 
+case/logs/auth.log is MEDIUM (60 lines)
+@AnvSec ➜ /workspaces/scripting-for-cybersecurity/lab07 (main) $ ./classify_size.sh case/logs/access.log 
+case/logs/access.log is LARGE (80 lines)
+@AnvSec ➜ /workspaces/scripting-for-cybersecurity/lab07 (main) $ ./classify_size.sh case/logs/firewall.log 
+case/logs/firewall.log is SMALL (5 lines)
+@AnvSec ➜ /workspaces/scripting-for-cybersecurity/lab07 (main) $ ./classify_size.sh case/nested/archive/old.log 
+case/nested/archive/old.log is SMALL (1 lines)
+
+Q2
+At the top: Added SMALL_LIMIT=10 and MEDIUM_LIMIT=70.
+#
+Before SMALL: Added a check for 0 lines (EMPTY).
+#
+In the comparisons: Replaced 10 and 70 with their variable names.
+#
+@AnvSec ➜ /workspaces/scripting-for-cybersecurity/lab07 (main) $ ./classify_size.sh case/evidence/empty.bin
+case/evidence/empty.bin is EMPTY
+
+Q3
+Variables let you change the limits in one place without searching through your script.
+
+Q4
+@AnvSec ➜ /workspaces/scripting-for-cybersecurity/lab07 (main) $ find case -type f -exec ./classify_ext.sh {} \; | grep "unrecognised"
+case/backups/users.old : unrecognised extension 'old'
+case/backups/config.old : unrecognised extension 'old'
+case/evidence/suspicious.dat : unrecognised extension 'dat'
+case/evidence/empty.bin : unrecognised extension 'bin'
+case/evidence/image.png : unrecognised extension 'png'
+case/evidence/archive.zip : unrecognised extension 'zip'
+
+Q5
+@AnvSec ➜ /workspaces/scripting-for-cybersecurity/lab07 (main) $ ./nested_check.sh case/logs/auth.log 
+case/logs/auth.log exists.
+  ...and has 60 lines.
+
+ @AnvSec ➜ /workspaces/scripting-for-cybersecurity/lab07 (main) $./nested_check.sh case/doesnotexist.txt
+case/doesnotexist.txt does not exist — skipping the line count entirely.
+
+@AnvSec ➜ /workspaces/scripting-for-cybersecurity/lab07 (main) $ ./nested_check.sh case/evidence/empty.bin 
+case/evidence/empty.bin exists.
+  ...but it has no lines.
+
+Q6
+Changes made:
+wc -c Counts the number of bytes in a file.
+[ -s "$FILE" ] Checks whether a file exists and is not empty.
+
+@AnvSec ➜ /workspaces/scripting-for-cybersecurity/lab07 (main) $ ./nested_check.sh case/evidence/image.png 
+case/evidence/image.png exists.
+  ...and has 2 lines.
+
+after script change
+
+$ ./nested_check.sh case/evidence/image.png
+case/evidence/image.png exists.
+  ...and has 66 lines.
+
+===== EXERCISE 2 =====
+Q1 - Account checks
+Testing username: root
+CRITICAL: root should never accept password logins over SSH
+Testing username: admin
+Warning: checking a generic admin account
+Testing username: guest
+Guest account — should normally be disabled
+Testing username: alice
+Checking standard account: alice
+Testing username: EMPTY
+Error: no username entered
+Q2 - Unquoted variable error
+bash: line 1: [: =: unary operator expected
+An empty unquoted variable breaks the comparison.
+Q3 - Case sensitivity
+Testing: Yes
+Confirmed.
+Testing: YES
+Confirmed.
+Testing: yes
+Confirmed.
+Q4 - Debug settings
+
+$ ./debug_check.sh case/configs/app.conf
+case/configs/app.conf: debug mode is off
+
+$ ./debug_check.sh case/configs/backup.conf
+case/configs/backup.conf: no debug setting
+
+$ ./debug_check.sh case/configs/server.conf
+case/configs/server.conf: no debug setting
+
+$ ./debug_check.sh case/backups/config.old
+case/backups/config.old: WARNING - debug mode is ON
+An old backup matters because insecure settings could be restored.
+Q5 - TLS settings
+
+$ ./tls_check.sh case/configs/app.conf
+case/configs/app.conf: no TLS setting
+
+$ ./tls_check.sh case/configs/backup.conf
+case/configs/backup.conf: no TLS setting
+
+$ ./tls_check.sh case/configs/server.conf
+case/configs/server.conf: TLS is enabled
+
+$ ./tls_check.sh case/backups/config.old
+case/backups/config.old: no TLS setting
+Q6 - Debug check accepts true, True, TRUE and yes.
+The value is converted to lowercase using ${DEBUG,,}.
+===== EXERCISE 3 =====
+Q1 - Attacking IP addresses
+IP: 203.0.113.10 - Failed attempts: 15
+
+$ ./risk_level.sh 15
+Risk: HIGH (15 failed attempts)
+IP: 198.51.100.24 - Failed attempts: 14
+
+$ ./risk_level.sh 14
+Risk: MEDIUM (14 failed attempts)
+IP: 198.51.100.77 - Failed attempts: 8
+
+$ ./risk_level.sh 8
+Risk: MEDIUM (8 failed attempts)
+IP: 203.0.113.200 - Failed attempts: 5
+
+$ ./risk_level.sh 5
+Risk: MEDIUM (5 failed attempts)
+IP: 203.0.113.15 - Failed attempts: 3
+
+$ ./risk_level.sh 3
+Risk: LOW (3 failed attempts)
+Q2 - Invalid number
+
+$ ./risk_level.sh abc
+Error: count must be a number
+Numeric comparisons need numbers, not text.
+Q3 - Critical risk
+
+$ ./risk_level.sh 30
+Risk: CRITICAL (30 failed attempts)
+CRITICAL is checked before the other risk levels.
+Q4 - Text versus numbers
+
+$ ./text_vs_number.sh
+Using = (text comparison):
+not equal
+Using -gt (numeric comparison):
+10 is greater than 9
+Using text ordering:
+10 sorts before 9
+Text comparisons compare characters; numeric comparisons compare values.
+Q5 - Port comparison
+
+$ ./port_check.sh case/config-old.txt
+case/config-old.txt: port 80 is privileged
+
+$ ./port_check.sh case/config-new.txt
+case/config-new.txt: port 443 is privileged
+Q6 - Invalid port
+
+$ ./port_check.sh /dev/fd/63
+/dev/fd/63: invalid port 'https' - not a number
+===== EXERCISE 4 =====
+Q1 - SQLMap detection
+
+$ ./scan_check.sh
+Scanning tool activity detected
+Q2 - Exit status method
+
+$ ./scan_check_exit.sh
+Scanning tool activity detected
+Q3 - Exit status overwritten
+Just checked
+Exit status after echo: 0
+echo replaces the previous command exit status.
+Q4 - Targeted usernames
+
+$ ./account_source.sh admin
+admin: LEGACY account
+
+$ ./account_source.sh backup
+backup: LEGACY account
+
+$ ./account_source.sh guest
+guest: UNKNOWN account
+
+$ ./account_source.sh oracle
+oracle: UNKNOWN account
+
+$ ./account_source.sh root
+root: LEGACY account
+
+$ ./account_source.sh test
+test: UNKNOWN account
+Q5 - Username matching
+The comma matches a CSV field boundary and -x matches an entire line.
+Searching admin without boundaries could also match sysadmin.
+===== EXERCISE 5 =====
+Q1 - Broken unquoted comparison
+bash: line 1: [: =: unary operator expected
+Q1 - Broken numeric comparison
+bash: line 1: [: abc: integer expression expected
+Q2 - Fixed condition order
+
+$ ./order_bug.sh 10
+At least 10
+
+$ ./order_bug.sh 5
+Non-negative
+
+$ ./order_bug.sh -3
+Negative
+Q3 - Windows carriage return
+true^M$
+true$
+Carriage returns are difficult to spot because they are normally invisible.
+
+===== CORRECTIONS AND MISSING ANSWERS =====
+
+Exercise 1 - Q6
+wc -l counts newline bytes, even inside binary files.
+wc -c counts bytes, so the second PNG result should say 66 bytes, not 66 lines.
+[ -s file ] tests whether a file has any data.
+
+Exercise 2 - Q4
+case/backups/config.old has debug mode enabled.
+This is an old backup configuration.
+It matters because insecure settings could be restored or reveal previous weaknesses.
+
+Exercise 2 - Q5
+Files without a TLS setting:
+case/configs/app.conf
+case/configs/backup.conf
+case/backups/config.old
+
+Exercise 2 - Q6
+Testing different values for debug:
+Testing debug=true
+/dev/fd/63: WARNING - debug mode is ON
+Testing debug=True
+/dev/fd/63: WARNING - debug mode is ON
+Testing debug=TRUE
+/dev/fd/63: WARNING - debug mode is ON
+Testing debug=yes
+/dev/fd/63: WARNING - debug mode is ON
+
+Exercise 3 - Q5
+The old port was 80, which is standard HTTP.
+The new port is 443, which is standard HTTPS.
+Both are privileged ports because they are below 1024.
+
+Exercise 4 - Q3
+Demonstrating how echo overwrites the previous exit status:
+Just checked
+Grep exit status: 1
+Exit status after echo: 0
+The echo command replaced grep's exit status.
+===== INVESTIGATION CHALLENGE =====
+
+Account tests and exit codes
+
+===== USER: alice =====
+alice: CURRENT account
+Role: student
+Status: active
+Failed logins: 0
+Accepted logins: 6
+Risk: NONE (no failed attempts)
+WARNING: Plaintext credentials and successful logins!
+Exit code: 0
+
+===== USER: bob =====
+bob: CURRENT account
+Role: student
+Status: active
+Failed logins: 0
+Accepted logins: 5
+Risk: NONE (no failed attempts)
+WARNING: Plaintext credentials and successful logins!
+Exit code: 0
+
+===== USER: eve =====
+eve: CURRENT account
+Role: staff
+Status: active
+Failed logins: 0
+Accepted logins: 3
+Risk: NONE (no failed attempts)
+Exit code: 0
+
+===== USER: david =====
+david: CURRENT account
+Role: student
+Status: disabled
+Failed logins: 0
+Accepted logins: 0
+Risk: NONE (no failed attempts)
+Exit code: 0
+
+===== USER: admin =====
+admin: LEGACY account
+Failed logins: 17
+Accepted logins: 0
+Risk: HIGH (17 failed attempts)
+WARNING: Attackers targeted a LEGACY account!
+Exit code: 2
+
+===== USER: root =====
+root: LEGACY account
+Failed logins: 10
+Accepted logins: 0
+Risk: MEDIUM (10 failed attempts)
+WARNING: Attackers targeted a LEGACY account!
+Exit code: 2
+
+===== USER: backup =====
+backup: LEGACY account
+Failed logins: 4
+Accepted logins: 0
+Risk: LOW (4 failed attempts)
+WARNING: Attackers targeted a LEGACY account!
+Exit code: 2
+
+===== USER: oracle =====
+oracle: UNKNOWN account
+Failed logins: 3
+Accepted logins: 0
+Risk: LOW (3 failed attempts)
+WARNING: Attackers targeted a UNKNOWN account!
+Exit code: 3
+
+===== USER: nobody =====
+nobody: UNKNOWN account
+Failed logins: 0
+Accepted logins: 0
+Risk: NONE (no failed attempts)
+Exit code: 3
+
+Q1 - Which targeted usernames are current accounts?
+admin: LEGACY account
+backup: LEGACY account
+guest: UNKNOWN account
+oracle: UNKNOWN account
+root: LEGACY account
+test: UNKNOWN account
+None of the targeted usernames appear in the current account list.
+This suggests the attacker may have used old account names or guessed common usernames.
+
+Q2 - Which targeted accounts are legacy?
+admin
+backup
+root
+If root still existed and allowed password login, it would be particularly dangerous.
+Root normally has complete administrative control over a Linux system.
+
+Q3 - Accepted logins for disabled accounts
+No accepted logins were found for disabled accounts.
+
+Accepted logins from external addresses:
+None found.
+The logs show what was recorded, but they cannot prove that no other compromise occurred.
+
+Q4 - Plaintext credentials and successful logins
+alice: 4 distinct internal IP addresses
+192.168.1.20
+192.168.1.35
+192.168.1.40
+192.168.1.55
+bob: 3 distinct internal IP addresses
+192.168.1.20
+192.168.1.35
+192.168.1.40
+
+This combination is worth reporting because plaintext credentials could be reused to access accounts.
+Successful logins show these usernames were actively used during the recorded period.

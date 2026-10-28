@@ -1,0 +1,118 @@
+===== INVESTIGATION CHALLENGE =====
+
+Account tests and exit codes
+
+===== USER: alice =====
+alice: CURRENT account
+Role: student
+Status: active
+Failed logins: 0
+Accepted logins: 6
+Risk: NONE (no failed attempts)
+WARNING: Plaintext credentials and successful logins!
+Exit code: 0
+
+===== USER: bob =====
+bob: CURRENT account
+Role: student
+Status: active
+Failed logins: 0
+Accepted logins: 5
+Risk: NONE (no failed attempts)
+WARNING: Plaintext credentials and successful logins!
+Exit code: 0
+
+===== USER: eve =====
+eve: CURRENT account
+Role: staff
+Status: active
+Failed logins: 0
+Accepted logins: 3
+Risk: NONE (no failed attempts)
+Exit code: 0
+
+===== USER: david =====
+david: CURRENT account
+Role: student
+Status: disabled
+Failed logins: 0
+Accepted logins: 0
+Risk: NONE (no failed attempts)
+Exit code: 0
+
+===== USER: admin =====
+admin: LEGACY account
+Failed logins: 17
+Accepted logins: 0
+Risk: HIGH (17 failed attempts)
+WARNING: Attackers targeted a LEGACY account!
+Exit code: 2
+
+===== USER: root =====
+root: LEGACY account
+Failed logins: 10
+Accepted logins: 0
+Risk: MEDIUM (10 failed attempts)
+WARNING: Attackers targeted a LEGACY account!
+Exit code: 2
+
+===== USER: backup =====
+backup: LEGACY account
+Failed logins: 4
+Accepted logins: 0
+Risk: LOW (4 failed attempts)
+WARNING: Attackers targeted a LEGACY account!
+Exit code: 2
+
+===== USER: oracle =====
+oracle: UNKNOWN account
+Failed logins: 3
+Accepted logins: 0
+Risk: LOW (3 failed attempts)
+WARNING: Attackers targeted a UNKNOWN account!
+Exit code: 3
+
+===== USER: nobody =====
+nobody: UNKNOWN account
+Failed logins: 0
+Accepted logins: 0
+Risk: NONE (no failed attempts)
+Exit code: 3
+
+Q1 - Which targeted usernames are current accounts?
+admin: LEGACY account
+backup: LEGACY account
+guest: UNKNOWN account
+oracle: UNKNOWN account
+root: LEGACY account
+test: UNKNOWN account
+None of the targeted usernames appear in the current account list.
+This suggests the attacker may have used old account names or guessed common usernames.
+
+Q2 - Which targeted accounts are legacy?
+admin
+backup
+root
+If root still existed and allowed password login, it would be particularly dangerous.
+Root normally has complete administrative control over a Linux system.
+
+Q3 - Accepted logins for disabled accounts
+No accepted logins were found for disabled accounts.
+
+Accepted logins from external addresses:
+None found.
+The logs show what was recorded, but they cannot prove that no other compromise occurred.
+
+Q4 - Plaintext credentials and successful logins
+alice: 4 distinct internal IP addresses
+192.168.1.20
+192.168.1.35
+192.168.1.40
+192.168.1.55
+bob: 3 distinct internal IP addresses
+192.168.1.20
+192.168.1.35
+192.168.1.40
+
+This combination is worth reporting because plaintext credentials could be reused to access accounts.
+Successful logins show these usernames were actively used during the recorded period.
