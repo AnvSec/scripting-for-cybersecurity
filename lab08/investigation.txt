@@ -1,0 +1,102 @@
+LAB 8 - INVESTIGATION
+Name: Dorian Pavosevic | Student ID: C00327585
+
+EXERCISE 3.1 - IP addresses in the three collected logs
+IP                auth.log      access.log    firewall.log 
+203.0.113.10      YES(15)       YES(21)       YES(1)        
+198.51.100.24     YES(14)       YES(19)       YES(1)        
+203.0.113.200     YES(5)        NO            YES(1)        
+
+PART 7 - INVESTIGATION SCRIPT RUNS
+
+$ ./investigate.sh case/logs/auth.log 198.51.100.77
+IP: 198.51.100.77
+Matches in case/logs/auth.log: 8
+Failed password events: 8
+Risk: MEDIUM
+Firewall: no matching records
+IOC list: NO
+Result: FOUND
+Exit code: 0
+
+$ ./investigate.sh case/logs/auth.log 203.0.113.200
+IP: 203.0.113.200
+Matches in case/logs/auth.log: 5
+Failed password events: 5
+Risk: MEDIUM
+Firewall: matching record(s):
+BLOCK 203.0.113.200 -> 10.0.0.30:3389
+IOC list: YES
+Result: FOUND
+Exit code: 0
+
+$ ./investigate.sh case/logs/access.log 203.0.113.77
+IP: 203.0.113.77
+Matches in case/logs/access.log: 12
+Failed password events: 0
+Risk: NONE
+Firewall: no matching records
+IOC list: NO
+Result: FOUND
+Exit code: 0
+
+$ ./investigate.sh case/logs/auth.log admin
+Username: admin
+Failed logins: 17
+Accepted logins: 0
+Account: LEGACY
+Result: FOUND
+Exit code: 0
+
+$ ./investigate.sh case/logs/auth.log alice
+Username: alice
+Failed logins: 0
+Accepted logins: 6
+Account: CURRENT
+Result: FOUND
+Exit code: 0
+
+$ ./investigate.sh case/logs/missing.log admin
+Error: file does not exist: case/logs/missing.log
+Exit code: 2
+
+EXTRA INPUT VALIDATION CHECKS
+
+$ ./investigate.sh case/logs/auth.log ''
+Error: search term is empty
+Exit code: 5
+
+$ ./investigate.sh case/logs admin
+Error: not a regular file: case/logs
+Exit code: 3
+
+Q1 - 198.51.100.77: 8 failed login attempts
+IOC list: NO
+Firewall log: NO
+An IP can attack without being on a known IOC list. IOC lists alone are not enough; inspect live logs and alerts too.
+
+Q2 - 203.0.113.200: compare firewall service and auth service
+Firewall entries:
+BLOCK 203.0.113.200 -> 10.0.0.30:3389
+Authentication entries:
+Sep 20 08:04:08 server sshd[1006]: Failed password for admin from 203.0.113.200 port 51029 ssh2
+Sep 20 08:10:18 server sshd[1014]: Failed password for root from 203.0.113.200 port 60971 ssh2
+Sep 20 08:22:50 server sshd[1030]: Failed password for oracle from 203.0.113.200 port 42806 ssh2
+Sep 20 08:36:58 server sshd[1048]: Failed password for backup from 203.0.113.200 port 58211 ssh2
+Sep 20 08:37:51 server sshd[1049]: Failed password for root from 203.0.113.200 port 58978 ssh2
+Port 3389 is Remote Desktop Protocol (RDP). The authentication log records SSH password-login attempts.
+
+Q3 - 203.0.113.77: web requests
+203.0.113.77 - - [20/Sep/2026:08:00:40 +0100] "GET /admin HTTP/1.1" 403 7436 "-" "curl/8.4.0"
+203.0.113.77 - - [20/Sep/2026:08:04:10 +0100] "GET /assets/app.js HTTP/1.1" 404 5308 "-" "sqlmap/1.8"
+203.0.113.77 - - [20/Sep/2026:08:04:54 +0100] "GET / HTTP/1.1" 200 3847 "-" "python-requests/2.31"
+203.0.113.77 - - [20/Sep/2026:08:08:59 +0100] "GET / HTTP/1.1" 200 9537 "-" "python-requests/2.31"
+203.0.113.77 - - [20/Sep/2026:08:10:35 +0100] "GET /wp-login.php HTTP/1.1" 403 10066 "-" "curl/8.4.0"
+203.0.113.77 - - [20/Sep/2026:08:15:11 +0100] "GET /wp-login.php HTTP/1.1" 200 7844 "-" "curl/8.4.0"
+203.0.113.77 - - [20/Sep/2026:08:17:10 +0100] "GET / HTTP/1.1" 200 9742 "-" "sqlmap/1.8"
+203.0.113.77 - - [20/Sep/2026:08:17:38 +0100] "GET /robots.txt HTTP/1.1" 404 4703 "-" "sqlmap/1.8"
+203.0.113.77 - - [20/Sep/2026:08:20:13 +0100] "GET /index.html HTTP/1.1" 404 9727 "-" "curl/8.4.0"
+203.0.113.77 - - [20/Sep/2026:08:20:46 +0100] "GET /index.html HTTP/1.1" 403 4662 "-" "Mozilla/5.0"
+203.0.113.77 - - [20/Sep/2026:08:35:20 +0100] "GET / HTTP/1.1" 200 5249 "-" "Mozilla/5.0"
+203.0.113.77 - - [20/Sep/2026:08:39:26 +0100] "GET /admin HTTP/1.1" 200 7802 "-" "Mozilla/5.0"
+These requests probe potentially sensitive web paths or application weaknesses, consistent with web scanning.
