@@ -1,0 +1,96 @@
+=== case/evidence/archive.zip ===
+Size: 138 bytes
+Type: Zip archive data, at least v2.0 to extract, compression method=deflate
+SHA-256: 4c25603189da855a2e0ce4704cceead19644a3378c15ce154773534be9e67040
+OK Extension matches detected type
+
+=== case/evidence/empty.bin ===
+Size: 0 bytes
+Type: empty
+SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+OK Extension matches detected type
+
+=== case/evidence/image.png ===
+Size: 66 bytes
+Type: PNG image data, 1 x 1, 8-bit/color RGBA, non-interlaced
+SHA-256: 62d7693d527ce6e5cf4a4f54478b889fe3e01a144d09a0a0482ca512d4225b3a
+OK Extension matches detected type
+
+=== case/evidence/notes.txt ===
+Size: 64 bytes
+Type: ASCII text
+Lines: 2
+SHA-256: 8ec8ceec9c70cf7c7934f6ed0832ea0609e9cff50d4f871cc8332223e5cf30cb
+OK Extension matches detected type
+
+=== case/evidence/passwords.txt ===
+Size: 33 bytes
+Type: ASCII text
+Lines: 2
+SHA-256: eddfa3ed00f03f2000f32dc9df2c3c23705612880d60510ef862885969f9d44f
+OK Extension matches detected type
+
+=== case/evidence/readme.md ===
+Size: 45 bytes
+Type: ASCII text
+Lines: 2
+SHA-256: 252c8b4f506eca38cf742a017bd56fa2a0079bd89dbf00e2db962c631be3f4e3
+OK Extension matches detected type
+
+=== case/evidence/suspicious.dat ===
+Size: 132 bytes
+Type: ELF, unknown class 154
+SHA-256: e1105562d3473531bf8157f2f95837c606bcfdca3b098026a2aceec4d3c783c0
+!! MISMATCH: expected data; detected ELF, unknown class 154
+
+=== case/scripts/check.sh ===
+Size: 35 bytes
+Type: Bourne-Again shell script, ASCII text executable
+Lines: 2
+SHA-256: e51a9378b524ebe982851a380e5929b7f0bfc4d171ab956f06e30383d7ac0892
+OK Extension matches detected type
+
+=== case/scripts/report.py ===
+Size: 27 bytes
+Type: ASCII text
+Lines: 1
+SHA-256: 917da56864a3d94f634620e58b4244ce201bc435371b6923935fa00ab5e79ffe
+!! MISMATCH: expected Python; detected ASCII text
+
+=== case/scripts/scan.py ===
+Size: 87 bytes
+Type: ASCII text
+Lines: 3
+SHA-256: 297f24d229cf5b5e57ba604eb11ccb170c2d0bf14da327d8172614928939a132
+!! MISMATCH: expected Python; detected ASCII text
+
+=== case/logs/access.log ===
+Size: 7915 bytes
+Type: ASCII text
+Lines: 80
+SHA-256: e166e9a99ec7169f5a85791447d3b4679e18102f86748add7c5a7f98b3f2c8dd
+OK Extension matches detected type
+IOC distinct indicators: 2
+IOC indicator-line matches: 40
+
+=== case/logs/auth.log ===
+Size: 5736 bytes
+Type: ASCII text
+Lines: 60
+SHA-256: 20aae6a32fc9a123ceb4d2ab685f6e93c14196c2806ab4500e7279f5c60d0836
+OK Extension matches detected type
+IOC distinct indicators: 3
+IOC indicator-line matches: 34
+
+=== case/logs/firewall.log ===
+Size: 180 bytes
+Type: ASCII text
+Lines: 5
+SHA-256: 0c6ee9f39d3cbf98100f14dad8a00910fd2010dc0fd153dd0ae8aa31696370b7
+OK Extension matches detected type
+IOC distinct indicators: 3
+IOC indicator-line matches: 3
+
+Files surveyed: 13
+Files flagged (!!): 3
+Total IOC indicator-line matches: 77

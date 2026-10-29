@@ -1,0 +1,218 @@
+LAB 9 - EXERCISES
+Student: Dorian Pavosevic | ID: C00327585
+===== EXERCISE 1 =====
+Q1 - Accepted logins in every log:
+case/logs/access.log: 0 accepted logins
+case/logs/auth.log: 15 accepted logins
+case/logs/firewall.log: 0 accepted logins
+
+Q2 - Failed totals:
+case/logs/access.log: 0 failed logins
+case/logs/auth.log: 45 failed logins
+case/logs/firewall.log: 0 failed logins
+TOTAL: 45
+auth.log alone: 45 failures. The other logs are not SSH authentication logs.
+
+Q3 - Literal list versus glob:
+Checking case/logs/auth.log...
+  exists, 60 lines
+Checking case/logs/access.log...
+  exists, 80 lines
+Checking case/logs/firewall.log...
+  exists, 5 lines
+Checking case/logs/missing.log...
+  MISSING
+A literal list visits only the paths listed, even if another log is added later.
+A *.log glob automatically includes newly added .log files in that directory.
+Glob test:
+case/logs/access.log
+case/logs/auth.log
+case/logs/firewall.log
+Numeric loop:
+Attempt 1
+Attempt 2
+Attempt 3
+Attempt 4
+Attempt 5
+
+Q4 - Extended configuration port and debug report:
+Configured ports and debug settings:
+case/configs/app.conf: port 8080; debug false
+case/configs/backup.conf: port (none); debug (none)
+case/configs/server.conf: port 443; debug (none)
+case/backups/config.old: port 80; debug true
+
+Q5 - Which globs find nested logs?
+case/logs/*.log:
+case/logs/access.log
+case/logs/auth.log
+case/logs/firewall.log
+case/*/*.log case/*/*/*.log:
+case/logs/access.log
+case/logs/auth.log
+case/logs/firewall.log
+case/nested/archive/old.log
+The first glob cannot reach the nested/archive directory; the second pattern can.
+Numbered example:
+File #1: case/configs/app.conf
+File #2: case/configs/backup.conf
+File #3: case/configs/server.conf
+File #4: case/logs/access.log
+File #5: case/logs/auth.log
+File #6: case/logs/firewall.log
+
+===== EXERCISE 2 =====
+Q1 - IOC matches in auth.log:
+MATCH   : 203.0.113.10 found in auth.log
+MATCH   : 198.51.100.24 found in auth.log
+no match: malicious.example
+no match: bad-login.example
+no match: 44d88612fea8a8f36de82e1278abb02f
+MATCH   : 203.0.113.200 found in auth.log
+no match: suspicious.example
+
+Q2 - An indicator containing spaces would be broken into multiple words by $(cat file).
+The loop would search for separate fragments, instead of the full indicator.
+
+Q3 - Every IOC across every log:
+=== case/logs/access.log ===
+  MATCH: 203.0.113.10 (21 lines)
+  MATCH: 198.51.100.24 (19 lines)
+=== case/logs/auth.log ===
+  MATCH: 203.0.113.10 (15 lines)
+  MATCH: 198.51.100.24 (14 lines)
+  MATCH: 203.0.113.200 (5 lines)
+=== case/logs/firewall.log ===
+  MATCH: 203.0.113.10 (1 lines)
+  MATCH: 198.51.100.24 (1 lines)
+  MATCH: 203.0.113.200 (1 lines)
+Lab 8 comparison for three IPs (YES/NO per log):
+IP                auth.log access.log firewall.log
+203.0.113.10      YES      YES        YES         
+198.51.100.24     YES      YES        YES         
+203.0.113.200     YES      NO         YES         
+These are the same source logs used for the Lab 8 table.
+
+Q4 - Correlations:
+203.0.113.10: seen in 3 log(s): access.log auth.log firewall.log
+198.51.100.24: seen in 3 log(s): access.log auth.log firewall.log
+malicious.example: seen in 0 log(s):
+bad-login.example: seen in 0 log(s):
+44d88612fea8a8f36de82e1278abb02f: seen in 0 log(s):
+203.0.113.200: seen in 2 log(s): auth.log firewall.log
+suspicious.example: seen in 0 log(s):
+Seen in all three logs:
+203.0.113.10
+198.51.100.24
+Seen in no logs:
+malicious.example (domain)
+bad-login.example (domain)
+44d88612fea8a8f36de82e1278abb02f (MD5 hash)
+suspicious.example (domain)
+
+Q5 - SSH attackers absent from IOC list:
+198.51.100.24 (0 failures): already in IOC list
+198.51.100.77 (0 failures): NOT in IOC list — candidate for new indicator
+203.0.113.10 (0 failures): already in IOC list
+203.0.113.15 (0 failures): NOT in IOC list — candidate for new indicator
+203.0.113.200 (0 failures): already in IOC list
+Candidate IPs should be investigated, not blindly added; compare attempts, times, source reputation and firewall/web evidence.
+
+Q6 - Web clients missing from IOC list (with external classification):
+192.168.1.20 (11 matching lines): NOT in IOC list [internal/private]
+192.168.1.35 (7 matching lines): NOT in IOC list [internal/private]
+198.51.100.24 (19 matching lines): in IOC list [non-private]
+198.51.100.99 (10 matching lines): NOT in IOC list [non-private]
+203.0.113.10 (21 matching lines): in IOC list [non-private]
+203.0.113.77 (12 matching lines): NOT in IOC list [non-private]
+Non-private IPs are external to RFC1918 networks; some sample ranges here are documentation-only.
+
+===== EXERCISE 3 =====
+Q1 - Tamper detection on a SCRATCH COPY (never the original):
+diff before vs after:
+4c4
+< 8ec8ceec9c70cf7c7934f6ed0832ea0609e9cff50d4f871cc8332223e5cf30cb  ./lab09_hash_work.biojey/work_evidence/notes.txt
+---
+> 578d69352fcdfdd590bd8c4ea0f8ab02149405bd130d89bafd3276b63693a046  ./lab09_hash_work.biojey/work_evidence/notes.txt
+sha256sum -c baseline (FAILED is expected for the copy of notes.txt):
+./lab09_hash_work.biojey/work_evidence/archive.zip: OK
+./lab09_hash_work.biojey/work_evidence/empty.bin: OK
+./lab09_hash_work.biojey/work_evidence/image.png: OK
+./lab09_hash_work.biojey/work_evidence/notes.txt: FAILED
+./lab09_hash_work.biojey/work_evidence/passwords.txt: OK
+./lab09_hash_work.biojey/work_evidence/readme.md: OK
+./lab09_hash_work.biojey/work_evidence/suspicious.dat: OK
+sha256sum: WARNING: 1 computed checksum did NOT match
+
+Q2 - File hashes change even when a file changes by just one byte.
+Replacing a letter in notes.txt with a different one-byte letter keeps the byte count, but changes SHA-256.
+
+Q3 - Verify the original evidence against the baseline:
+case/evidence/archive.zip: OK
+case/evidence/empty.bin: OK
+case/evidence/image.png: OK
+case/evidence/notes.txt: OK
+case/evidence/passwords.txt: OK
+case/evidence/readme.md: OK
+case/evidence/suspicious.dat: OK
+All OK means the evidence matches the saved baseline at the time of verification.
+
+Q4 - Empty file SHA-256 versus /dev/null:
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  case/evidence/empty.bin
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  /dev/null
+Identical hashes mean both inputs contain exactly zero bytes.
+
+Q5 - MD5 IOC scan:
+clean    : case/evidence/archive.zip
+clean    : case/evidence/empty.bin
+clean    : case/evidence/image.png
+clean    : case/evidence/notes.txt
+clean    : case/evidence/passwords.txt
+clean    : case/evidence/readme.md
+clean    : case/evidence/suspicious.dat
+A hash IOC only matches identical file content; changing any byte normally changes the hash.
+
+Q6 - Scratch data removed:
+Removed: ./lab09_hash_work.biojey (contains only temporary copies)
+
+===== EXERCISE 4 =====
+Q1 and Q2 - magic_check.sh with .bin and .dat expectations:
+OK case/evidence/archive.zip — Zip archive data, at least v2.0 to extract, compression method=deflate
+OK case/evidence/empty.bin — empty
+OK case/evidence/image.png — PNG image data, 1 x 1, 8-bit/color RGBA, non-interlaced
+OK case/evidence/notes.txt — ASCII text
+OK case/evidence/passwords.txt — ASCII text
+OK case/evidence/readme.md — ASCII text
+!! case/evidence/suspicious.dat — expected data, detected: ELF, unknown class 154
+OK case/scripts/check.sh — Bourne-Again shell script, ASCII text executable
+!! case/scripts/report.py — expected Python, detected: ASCII text
+!! case/scripts/scan.py — expected Python, detected: ASCII text
+An empty .bin should be detected as empty, not reported as a mismatch.
+
+Q3 - Locate ELF and inspect FIRST FOUR BYTES (do not execute it):
+EXECUTABLE CONTENT: case/evidence/suspicious.dat (ELF, unknown class 154)
+ELF magic for case/evidence/suspicious.dat:
+ 7f 45 4c 46
+ELF signature: hexadecimal 7f 45 4c 46 (DEL E L F).
+Q4 - Unknown ELF class suggests damage, a malformed header or deliberate disguise; never execute evidence to find out.
+Q5 - .sh and .py expectations are now included in magic_check.sh:
+case/scripts/check.sh: Bourne-Again shell script, ASCII text executable
+case/scripts/report.py: ASCII text
+case/scripts/scan.py: ASCII text
+
+===== EXERCISE 5 =====
+Q1 - Double-zero bug:
+Broken count (line endings visible):
+0$
+0$
+Fixed count: [0]
+grep -c already prints 0 when nothing matches; || echo 0 prints another zero.
+
+Q2 - Glob with no matches:
+Broken: Found case/logs/*.xyz
+With guard, no file is reported:
+
+Q3 - Broken running total (reset inside loop) vs fixed:
+Broken (only last log count): 5
+Fixed (all top-level log lines): 145
+Initialise the total before the loop, not within it.

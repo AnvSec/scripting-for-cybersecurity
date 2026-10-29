@@ -1,0 +1,34 @@
+LAB 9 - INVESTIGATION
+Student: Dorian Pavosevic | ID: C00327585
+
+Q1 - Which log contains the most distinct IOCs and most IOC indicator-line matches?
+case/logs/access.log: 2 distinct IOCs, 40 IOC indicator-line matches
+case/logs/auth.log: 3 distinct IOCs, 34 IOC indicator-line matches
+case/logs/firewall.log: 3 distinct IOCs, 3 IOC indicator-line matches
+Most distinct: auth.log, firewall.log (3).
+Most IOC indicator-line matches: access.log (40).
+These can differ because one log may have many repeats of the same IOC, while another log may contain more unique IOCs.
+
+Q2 - Flagged files and their reasons:
+!! case/evidence/suspicious.dat — expected data, detected: ELF, unknown class 154
+!! case/scripts/report.py — expected Python, detected: ASCII text
+!! case/scripts/scan.py — expected Python, detected: ASCII text
+Only !! marks a detected mismatch; ?? means the extension had no defined expectation.
+
+Q3 - Which log is missed by the survey?
+case/nested/archive/old.log is skipped.
+The survey looks in case/evidence/*, case/scripts/* and case/logs/*, not nested/archive.
+
+Q4 - Would a future case/logs/vpn.log be included?
+Yes. The case/logs/* glob picks up new regular files automatically, so no script change is needed.
+
+Q5 - Attack summary (four sentences):
+The SSH authentication log records failed logins from these addresses: 198.51.100.24, 198.51.100.77, 203.0.113.10, 203.0.113.15, 203.0.113.200.
+The web access log records requests from 192.168.1.20, 192.168.1.35, 198.51.100.24, 198.51.100.99, 203.0.113.10, 203.0.113.77, including sqlmap activity suggesting web application scanning.
+The firewall log records network traffic such as ALLOW 192.168.1.20 -> 10.0.0.10:443, providing evidence of attempted access to services alongside the SSH and HTTP logs.
+The collected workstation evidence includes files whose detected types disagree with their extensions; these were flagged and hashed without being executed.
+
+Survey totals:
+Files surveyed: 13
+Files flagged (!!): 3
+Total IOC indicator-line matches: 77
